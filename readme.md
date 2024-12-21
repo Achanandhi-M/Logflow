@@ -28,6 +28,7 @@
 
 ## Prerequisites
 
+- AWS Account
 - AWS CLI
 - Python 3.x
 - CloudFormation templates (included in the repository)
@@ -38,31 +39,40 @@
 ## Setup and Usage
 
 ### Step 1: Clone the Repository
+Clone the repository and navigate to the project directory:
 ```bash
-git clone 
-cd 
+git clone https://github.com/Achanandhi-M/Logflow.git
+cd Logflow
 ```
 
-### Step 2: Deploy CloudFormation Stack
-Deploy the stack to set up all required AWS resources:
+### Step 2: Deploy CloudFormation Stacks
+Deploy the CloudFormation stacks to set up all required AWS resources:
+
+1. Deploy the S3 bucket stack:
+    ```bash
+    aws cloudformation deploy --template-file CloudFormation/Create_S3_Bucket.yaml --stack-name LogFlowS3Stack
+    ```
+
+2. Deploy the Glue and Lambda stack:
+    ```bash
+    aws cloudformation deploy --template-file CloudFormation/Create_Glue_Lambda.yaml --stack-name LogFlowGlueLambdaStack
+    ```
+
+### Step 3: Convert and Upload Logs
+Convert your Excel log file to Parquet and upload it to the S3 bucket:
 ```bash
-aws cloudformation deploy --template-file cloudformation-template.yaml --stack-name LogFlowStack
+python scripts/convert_excel_to_parquet.py --input-file /path/to/your-log.xlsx --s3-bucket-name your-s3-bucket-name
 ```
 
-### Step 3: Upload Logs
-Upload an Excel log file to the S3 bucket created by the CloudFormation stack:
-```bash
-aws s3 cp /path/to/your-log.xlsx s3://your-s3-bucket-name/
-```
-
-### Step 4: Query Logs
-Use Amazon Athena to query your logs:
-1. Open the Athena console.
+### Step 4: Query Logs with Athena
+1. Open the Amazon Athena console.
 2. Select the database created by the Glue Crawler.
-3. Start querying your log data.
+3. Start querying your log data using SQL.
 
 ---
 
+## Directory Structure
+```plaintext
 logManagement/
 │
 ├── CloudFormation/                        # Directory for CloudFormation templates
@@ -76,4 +86,7 @@ logManagement/
 │   └── convert_excel_to_parquet.py        # Script to convert Excel to Parquet and upload to S3
 │
 ├── README.md                              # Project documentation
+```
+--- 
 
+```
