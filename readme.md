@@ -39,8 +39,8 @@
 ### Step 1: Clone the Repository
 Clone the repository and navigate to the project directory:
   ```bash
-git clone https://github.com/Achanandhi-M/Logflow.git
-cd Logflow
+   git clone https://github.com/Achanandhi-M/Logflow.git
+   cd Logflow
   ```
 
 ### Step 2: Deploy CloudFormation Stacks
