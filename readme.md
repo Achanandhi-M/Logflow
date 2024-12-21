@@ -1,5 +1,3 @@
-
-```markdown
 # LogFlow
 
 **LogFlow** is an automated log management pipeline that transforms logs in Excel format into Parquet, uploads them to an S3 bucket, triggers AWS Lambda to run a Glue Crawler for metadata extraction, and makes the data searchable using Athena. The entire process is automated using AWS CloudFormation.
@@ -61,7 +59,7 @@ Deploy the CloudFormation stacks to set up all required AWS resources:
 ### Step 3: Convert and Upload Logs
 Convert your Excel log file to Parquet and upload it to the S3 bucket:
 ```bash
-python scripts/convert_excel_to_parquet.py --input-file /path/to/your-log.xlsx --s3-bucket-name your-s3-bucket-name
+python scripts/convert_excel_to_parquet.py 
 ```
 
 ### Step 4: Query Logs with Athena
@@ -87,6 +85,7 @@ logManagement/
 │
 ├── README.md                              # Project documentation
 ```
---- 
 
-```
+## Author
+
+Developed by Your Achanandhi M
