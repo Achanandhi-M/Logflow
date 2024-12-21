@@ -1,0 +1,13 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Resources:
+  S3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: 'your_bucket_name'
+      AccessControl: Private
+
+Outputs:
+  S3BucketName:
+    Description: "Name of the S3 Bucket"
+    Value: !Ref S3Bucket

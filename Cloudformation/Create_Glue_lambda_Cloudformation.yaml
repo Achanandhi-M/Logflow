@@ -1,0 +1,98 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Resources:
+  # Lambda Execution Role
+  LambdaExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: 'Allow'
+            Principal:
+              Service:
+                - 'lambda.amazonaws.com'
+                - 'glue.amazonaws.com'
+            Action: 'sts:AssumeRole'
+      Policies:
+        - PolicyName: 'LambdaGluePolicy'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: 'Allow'
+                Action:
+                  - 'glue:CreateDatabase'
+                  - 'glue:DeleteDatabase'
+                  - 'glue:UpdateDatabase'
+                  - 'glue:GetDatabase'
+                  - 'glue:CreateTable'
+                  - 'glue:DeleteTable'
+                  - 'glue:UpdateTable'
+                  - 'glue:GetTable'
+                  - 'glue:GetPartitions'
+                  - 'glue:CreatePartition'
+                  - 'glue:DeletePartition'
+                  - 'glue:UpdatePartition'
+                  - 'glue:GetPartition'
+                  - 'glue:GetTables'
+                  - 'glue:GetPartitions'
+                  - 'glue:StartCrawler'
+                  - 'glue:GetCrawler'
+                  - 'glue:StopCrawler'
+                  - 'glue:BatchCreatePartition'
+                  - 'glue:BatchUpdatePartition'
+                  - 'glue:BatchGetPartition'
+                  - 'glue:DeletePartition'
+                  - 'glue:UpdatePartition' 
+                Resource: '*'
+
+              # Permissions to access other AWS services like S3 and Athena
+              - Effect: 'Allow'
+                Action:
+                  - 's3:*'
+                  - 'athena:StartQueryExecution'
+                Resource: '*'
+
+              # Grant permissions for Glue to write to CloudWatch logs
+              - Effect: 'Allow'
+                Action:
+                  - 'logs:PutLogEvents'
+                  - 'logs:CreateLogStream'
+                Resource: 'arn:aws:logs:*:*:log-group:*:log-stream:*'
+
+  # Lambda Function
+  LambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: 'TriggerGlueCrawler'
+      Handler: 'lambda_function.lambda_handler'
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        S3Bucket: '' #your bucket name
+        S3Key: '.zip' #upload your lambda function path
+      Runtime: 'python3.11'  #if you want change runtime
+      MemorySize: 128
+      Timeout: 60
+
+  # Glue Crawler
+  GlueCrawler:
+    Type: 'AWS::Glue::Crawler'
+    Properties:
+      Name: 'MyLogCrawler'
+      Role: !GetAtt LambdaExecutionRole.Arn
+      DatabaseName: ''  #your database name
+      Targets:
+        S3Targets:
+          - Path: 's3://' #include your path
+      TablePrefix: ''     #include prefix
+      RecrawlPolicy:
+        RecrawlBehavior: 'CRAWL_NEW_FOLDERS_ONLY'
+
+Outputs:
+  LambdaFunctionArn:
+    Description: "ARN of the Lambda Function"
+    Value: !GetAtt LambdaFunction.Arn
+
+  GlueCrawlerName:
+    Description: "Name of the Glue Crawler"
+    Value: !Ref GlueCrawler
